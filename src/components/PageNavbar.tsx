@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import "./Navbar.css";
 import logo from "../assets/logo.svg";
 import {
@@ -10,36 +11,34 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
+  Avatar,
 } from "@nextui-org/react";
+import { auth } from "../firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
-import { googleLogout } from "@react-oauth/google";
-import * as Avatar from "@radix-ui/react-avatar";
 
 export default function PageNavbar() {
-  let profile = null;
-  try {
-    profile = JSON.parse(localStorage.getItem("user_data"));
-  } catch (error) {
-    console.error("Error parsing user data from local storage:", error);
-    localStorage.removeItem("user");
-    localStorage.removeItem("user_data");
-  }
-  let userImage = null;
-  try {
-    userImage = localStorage.getItem("user_image");
-  } catch (error) {
-    console.error("Error retrieving user image from local storage:", error);
-  }
-
-  const logOut = () => {
-    googleLogout();
-    localStorage.removeItem("user");
-    localStorage.removeItem("user_data");
-    localStorage.removeItem("user_image");
-    window.location.reload(); // Automatically update the page after user logs out
-  };
-
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        navigate("/");
+      }
+    });
+    return () => unsubscribe();
+  }, [navigate]);
+
+  const logOut = async () => {
+    try {
+      await signOut(auth);
+      navigate("/");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <Navbar
@@ -64,7 +63,7 @@ export default function PageNavbar() {
     >
       <NavbarBrand>
         <Link to="/">
-          <img className="image-logo" src={logo} alt="LCA logo"></img>
+          <img className="image-logo" src={logo} alt="LCA logo" />
           <p className="font-bold text-inherit mt-4 title">Peer Tutoring</p>
         </Link>
       </NavbarBrand>
@@ -100,43 +99,25 @@ export default function PageNavbar() {
       </NavbarContent>
       <NavbarContent justify="end">
         <NavbarItem>
-          {userImage ? (
+          {user ? (
+            // User is logged in, show avatar with dropdown
             <Dropdown placement="bottom-end">
               <DropdownTrigger>
-                <Avatar.Root className="bg-blackA3 inline-flex h-[45px] w-[45px] select-none items-center justify-center overflow-hidden rounded-full align-middle">
-                  <Avatar.Image
-                    className="h-full w-full rounded-[inherit] object-cover border-solid border-4"
-                    src={userImage}
-                    alt="Google Profile image"
-                  />
-                  <Avatar.Fallback
-                    className="text-violet11 leading-1 flex h-full w-full items-center justify-center bg-white text-[15px] font-medium border-dotted border-2"
-                    delayMs={600}
-                  >
-                    {profile.given_name}
-                  </Avatar.Fallback>
-                </Avatar.Root>
+                <Avatar
+                  isBordered
+                  as="button"
+                  className="transition-transform"
+                  src={user.photoURL || "https://placeholder"}
+                />
               </DropdownTrigger>
               <DropdownMenu aria-label="Profile Actions" variant="flat">
-                <DropdownItem key="profile" className="h-14 gap-2">
-                  <p className="font-semibold">Signed in as</p>
-                  <p className="font-semibold">{profile.email}</p>
-                </DropdownItem>
-                <DropdownItem
-                  key="settings"
-                  onClick={() => navigate("/settings")}
-                >
-                  My Settings
-                </DropdownItem>
-                <DropdownItem key="help_and_feedback">
-                  Help & Feedback
-                </DropdownItem>
                 <DropdownItem key="logout" color="danger" onClick={logOut}>
                   Log Out
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           ) : (
+            // User is not logged in, show login button
             <Link to="/login">
               <Button id="buttons" color="primary" variant="flat">
                 Login
