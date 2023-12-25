@@ -1,10 +1,10 @@
 import { useState } from "react";
 import React from "react";
 import MainLayout from "../layout/MainLayout";
-import GoogleButton from "react-google-button";
-import { auth, googleProvider } from "../firebase";
+import { auth } from "../firebase";
 import {
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
@@ -43,9 +43,9 @@ export const LoginPage = () => {
     }
   };
 
-  const logOut = async () => {
+  const resetPassword = async () => {
     try {
-      await signOut(auth);
+      await sendPasswordResetEmail(auth, email);
     } catch (err) {
       console.error(err);
     }
@@ -59,8 +59,6 @@ export const LoginPage = () => {
           type="email"
           label="Email"
           variant="bordered"
-          isInvalid={true}
-          errorMessage="Please enter a valid email"
           className="max-w-xs mb-4"
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -106,16 +104,15 @@ export const LoginPage = () => {
           {" "}
           Sign Up
         </Button>
-
         <Button
           variant="ghost"
           color="primary"
           size="lg"
-          onClick={logOut}
-          className="mx-auto"
+          onClick={resetPassword}
+          className="mx-auto mb-4"
         >
           {" "}
-          logOut
+          Reset Password
         </Button>
       </div>
     </MainLayout>
