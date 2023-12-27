@@ -5,7 +5,10 @@ const { nextui } = require("@nextui-org/react");
 module.exports = {
   content: [
     "./index.html",
-    "./src/**/*.{html,js,ts,jsx,tsx}",
+    "./src/App.tsx",
+    "./src/**/*.{html,js}",
+    "./src/**/*.{ts,jsx,tsx}",
+    "./src/components/*.{tsx,ts}",
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {

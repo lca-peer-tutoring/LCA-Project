@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Navbar.css";
 import logo from "../assets/logo.svg";
 import {
@@ -11,28 +11,42 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
-  Avatar,
-  link,
 } from "@nextui-org/react";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase"; // Assuming db is your Firestore instance
 import { onAuthStateChanged, signOut } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
+import { Avatar } from "@chakra-ui/react";
+import { Spinner } from "@chakra-ui/react";
 
 export default function PageNavbar() {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // Initialize loading state
+  const [name, setName] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+      if (currentUser) {
+        const storedUserInfo = localStorage.getItem("userInfo");
+        if (storedUserInfo) {
+          const { firstName, lastName } = JSON.parse(storedUserInfo);
+          setName(`${firstName} ${lastName}`);
+        }
+      }
+      setLoading(false); // Set loading to false after user is fetched
     });
+
     return () => unsubscribe();
   }, []);
 
   const logOut = async () => {
     try {
       await signOut(auth);
+      localStorage.clear();
       navigate("/login");
+      setName(""); // Reset name on logout
     } catch (err) {
       console.error(err);
     }
@@ -64,9 +78,14 @@ export default function PageNavbar() {
       }}
     >
       <NavbarBrand>
-        <Link to="/">
+        <Link to="/" className="flex items-center">
+          {" "}
+          {/* Add flex and items-center classes */}
           <img className="image-logo" src={logo} alt="LCA logo" />
-          <p className="font-bold text-inherit mt-4 title">Peer Tutoring</p>
+          <span className="font-bold text-inherit ml-2">
+            Peer Tutoring
+          </span>{" "}
+          {/* Adjust margin as needed */}
         </Link>
       </NavbarBrand>
       <NavbarContent className="sm:flex gap-4" justify="center">
@@ -101,16 +120,14 @@ export default function PageNavbar() {
       </NavbarContent>
       <NavbarContent justify="end">
         <NavbarItem>
-          {user ? (
-            // User is logged in, show avatar with dropdown
+          {loading ? (
+            // Show Chakra UI Spinner while loading
+            <Spinner size="md" color="blue.500" />
+          ) : user ? (
+            // Show avatar with dropdown if user is logged in
             <Dropdown placement="bottom-end">
               <DropdownTrigger>
-                <Avatar
-                  isBordered
-                  as="button"
-                  className="transition-transform"
-                  src={user.photoURL || "https://placeholder"}
-                />
+                <Avatar size="md" name={name} src="" />
               </DropdownTrigger>
               <DropdownMenu aria-label="Profile Actions" variant="flat">
                 <DropdownItem key="account" onClick={linkToSettings}>

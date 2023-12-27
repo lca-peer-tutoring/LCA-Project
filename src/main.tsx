@@ -8,6 +8,7 @@ import LoginPage from "./pages/LoginPage.tsx";
 import HelpPage from "./pages/HelpPage.tsx";
 import CalendarPage from "./pages/CalendarPage.tsx";
 import SettingsPage from "./pages/SettingsPage.tsx";
+import { ChakraProvider } from "@chakra-ui/react";
 
 const router = createBrowserRouter([
   {
@@ -35,7 +36,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <NextUIProvider>
-      <RouterProvider router={router} />
+      <ChakraProvider>
+        <RouterProvider router={router} />
+      </ChakraProvider>
     </NextUIProvider>
   </React.StrictMode>
 );

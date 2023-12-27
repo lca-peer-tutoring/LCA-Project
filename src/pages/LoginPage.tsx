@@ -46,32 +46,35 @@ export const LoginPage = () => {
       // Check if email address is from the allowed domain
       if (email.endsWith("@lca.edu")) {
         // Check if user already exists in Firestore
-        const usersRef = collection(db, "users");
-        const q = query(usersRef, where("email", "==", email));
-        const querySnapshot = await getDocs(q);
 
-        if (querySnapshot.empty) {
-          // Proceed with signup if user doesn't exist
-          const userCredential = await createUserWithEmailAndPassword(
-            auth,
-            email,
-            password
-          );
-          const user = userCredential.user;
+        // Proceed with signup if user doesn't exist
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        const user = userCredential.user;
 
-          // Create a user document in Firestore
-          const userDocRef = doc(db, "users", user.uid);
-          await setDoc(userDocRef, {
+        // Create a user document in Firestore
+        const userDocRef = doc(db, "users", user.uid);
+        await setDoc(userDocRef, {
+          firstName: firstName.charAt(0).toUpperCase() + firstName.slice(1),
+          lastName: lastName.charAt(0).toUpperCase() + lastName.slice(1),
+          email: email,
+          userId: user.uid,
+        });
+
+        localStorage.setItem(
+          "userInfo",
+          JSON.stringify({
             firstName: firstName.charAt(0).toUpperCase() + firstName.slice(1),
             lastName: lastName.charAt(0).toUpperCase() + lastName.slice(1),
             email: email,
-          });
+            userId: user.uid,
+          })
+        );
 
-          navigate("/"); // Navigate to home page after successful signup
-        } else {
-          // User already exists, show an error message
-          showAlert("danger", "An account with this email already exists.");
-        }
+        navigate("/"); // Navigate to home page after successful signup
       } else {
         // Email address is not from the allowed domain, show an error message
         showAlert(
@@ -80,7 +83,8 @@ export const LoginPage = () => {
         );
       }
     } catch (err) {
-      showAlert("danger", "An account with this email already exists."); // Show error alert
+      console.error(err);
+      showAlert("danger", "Email already in use."); // Show error alert
     }
   };
 
@@ -92,6 +96,19 @@ export const LoginPage = () => {
         password
       );
       if (userCredential) {
+        const user = userCredential.user;
+
+        // Store user information in local storage after successful login
+        localStorage.setItem(
+          "userInfo",
+          JSON.stringify({
+            email: user.email, // Email from user credential
+            userId: user.uid, // User ID from user credential
+            firstName: firstName.charAt(0).toUpperCase() + firstName.slice(1),
+            lastName: lastName.charAt(0).toUpperCase() + lastName.slice(1),
+          })
+        );
+
         navigate("/"); // Navigate to home page after successful login
       }
     } catch (err) {
