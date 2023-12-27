@@ -1,7 +1,7 @@
 import { useState } from "react";
 import React from "react";
 import MainLayout from "../layout/MainLayout";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
@@ -12,12 +12,22 @@ import { EyeFilledIcon } from "../assets/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "../assets/EyeSlashFilledIcon";
 import { useNavigate } from "react-router-dom";
 import closeIcon from "../assets/closeIcon.svg";
+import {
+  doc,
+  setDoc,
+  query,
+  getDocs,
+  collection,
+  where,
+} from "firebase/firestore";
 
 export const LoginPage = () => {
   const [isVisible, setIsVisible] = React.useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [alert, setAlert] = useState({ type: "", message: "" });
+  const [username] = email.split("@");
+  const [firstName, lastName] = username.split(".");
   const navigate = useNavigate(); //
   const toggleVisibility = () => setIsVisible(!isVisible);
 
@@ -33,16 +43,44 @@ export const LoginPage = () => {
 
   const signUp = async () => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      if (userCredential) {
-        navigate("/"); // Navigate to home page after successful signup
+      // Check if email address is from the allowed domain
+      if (email.endsWith("@lca.edu")) {
+        // Check if user already exists in Firestore
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("email", "==", email));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          // Proceed with signup if user doesn't exist
+          const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+          const user = userCredential.user;
+
+          // Create a user document in Firestore
+          const userDocRef = doc(db, "users", user.uid);
+          await setDoc(userDocRef, {
+            firstName: firstName.charAt(0).toUpperCase() + firstName.slice(1),
+            lastName: lastName.charAt(0).toUpperCase() + lastName.slice(1),
+            email: email,
+          });
+
+          navigate("/"); // Navigate to home page after successful signup
+        } else {
+          // User already exists, show an error message
+          showAlert("danger", "An account with this email already exists.");
+        }
+      } else {
+        // Email address is not from the allowed domain, show an error message
+        showAlert(
+          "danger",
+          "Only email addresses from @lca.edu domain are allowed."
+        );
       }
     } catch (err) {
-      showAlert("danger", "Invalid email or password."); // Show error alert
+      showAlert("danger", "An account with this email already exists."); // Show error alert
     }
   };
 
