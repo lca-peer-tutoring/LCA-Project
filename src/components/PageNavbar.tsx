@@ -17,7 +17,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar } from "@chakra-ui/react";
-import { Spinner } from "@chakra-ui/react";
+import { Spinner } from "@nextui-org/react";
 
 export default function PageNavbar() {
   const [user, setUser] = useState(null);
