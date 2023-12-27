@@ -6,53 +6,91 @@ import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
-  signOut,
 } from "firebase/auth";
 import { Input, Button } from "@nextui-org/react";
 import { EyeFilledIcon } from "../assets/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "../assets/EyeSlashFilledIcon";
+import { useNavigate } from "react-router-dom";
+import closeIcon from "../assets/closeIcon.svg";
 
 export const LoginPage = () => {
   const [isVisible, setIsVisible] = React.useState(false);
-
-  const toggleVisibility = () => setIsVisible(!isVisible);
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  auth.onAuthStateChanged((user) => {
-    if (user) {
-      console.log("user logged in: ", user);
-    } else {
-      console.log("user logged out");
-    }
-  });
+  const [alert, setAlert] = useState({ type: "", message: "" });
+  const navigate = useNavigate(); //
+  const toggleVisibility = () => setIsVisible(!isVisible);
+
+  // Function to display alerts
+  const showAlert = (type, message) => {
+    setAlert({ type, message });
+  };
+
+  // Function to hide alerts
+  const hideAlert = () => {
+    setAlert({ type: "", message: "" });
+  };
 
   const signUp = async () => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      if (userCredential) {
+        navigate("/"); // Navigate to home page after successful signup
+      }
     } catch (err) {
-      console.error(err);
+      showAlert("danger", "Invalid email or password."); // Show error alert
     }
   };
 
   const logIn = async () => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      if (userCredential) {
+        navigate("/"); // Navigate to home page after successful login
+      }
     } catch (err) {
-      console.error(err);
+      showAlert("danger", "Invalid email or password."); // Show error alert
     }
   };
 
   const resetPassword = async () => {
     try {
       await sendPasswordResetEmail(auth, email);
+      showAlert("success", "Reset password email has been sent."); // Show success alert
     } catch (err) {
-      console.error(err);
+      showAlert("danger", "Invalid email."); // Show error alert
     }
   };
 
   return (
     <MainLayout>
+      {alert.message && (
+        <div
+          className={`alert alert-${alert.type} d-flex justify-content-between align-items-center`}
+          role="alert"
+          style={{ maxWidth: "600px", margin: "0 auto" }}
+        >
+          {alert.message}
+          <Button
+            isIconOnly
+            color="danger"
+            variant="faded"
+            size="sm"
+            aria-label="Close"
+            onPress={hideAlert}
+          >
+            <img className="image-logo" src={closeIcon} alt="Close" />
+          </Button>
+        </div>
+      )}
       <div className="flex flex-col w-full h-full justify-center items-center pt-4">
         <Input
           isRequired

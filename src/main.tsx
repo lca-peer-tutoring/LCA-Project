@@ -3,7 +3,6 @@ import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import { NextUIProvider } from "@nextui-org/react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { GoogleOAuthProvider } from "@react-oauth/google";
 import "./index.css";
 import LoginPage from "./pages/LoginPage.tsx";
 import HelpPage from "./pages/HelpPage.tsx";

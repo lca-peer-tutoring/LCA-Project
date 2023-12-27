@@ -12,6 +12,7 @@ import {
   DropdownMenu,
   DropdownItem,
   Avatar,
+  link,
 } from "@nextui-org/react";
 import { auth } from "../firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
@@ -24,20 +25,21 @@ export default function PageNavbar() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      if (currentUser) {
-        navigate("/");
-      }
     });
     return () => unsubscribe();
-  }, [navigate]);
+  }, []);
 
   const logOut = async () => {
     try {
       await signOut(auth);
-      navigate("/");
+      navigate("/login");
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const linkToSettings = () => {
+    navigate("/settings");
   };
 
   return (
@@ -111,6 +113,9 @@ export default function PageNavbar() {
                 />
               </DropdownTrigger>
               <DropdownMenu aria-label="Profile Actions" variant="flat">
+                <DropdownItem key="account" onClick={linkToSettings}>
+                  My Account
+                </DropdownItem>
                 <DropdownItem key="logout" color="danger" onClick={logOut}>
                   Log Out
                 </DropdownItem>
