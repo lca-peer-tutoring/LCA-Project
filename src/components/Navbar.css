@@ -1,0 +1,20 @@
+.top-nav-bar {
+  padding-bottom: 6em;
+  margin-bottom: 1em;
+  border-bottom: solid 1px #e1e1e1;
+}
+
+.title {
+  font-family: "Hind", sans-serif;
+  font-size: 16px;
+}
+
+.image-logo {
+  float: left;
+  margin: 1rem;
+}
+
+#buttons {
+  float: right;
+  margin: 2em;
+}
