@@ -1,9 +1,11 @@
 import MainLayout from "@/components/main-layout";
 
-export default function Home() {
+function HelpPage() {
   return (
-    <>
+    <div>
       <MainLayout />
-    </>
+    </div>
   );
 }
+
+export default HelpPage;

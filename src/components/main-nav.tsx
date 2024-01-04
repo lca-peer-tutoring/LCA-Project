@@ -13,7 +13,7 @@ export function MainNav({
     >
       <Link
         href="/calendar"
-        className="text-md font-medium transition-colors hover:text-primary"
+        className="text-md font-medium text-muted-foreground transition-colors hover:text-primary"
       >
         Calendar
       </Link>

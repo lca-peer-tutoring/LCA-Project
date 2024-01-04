@@ -223,27 +223,12 @@ import { MainNav } from "@/components/main-nav";
 import { UserNav } from "@/components/user-nav";
 import logo from "@/assets/lcaLogo.svg";
 import AccountPage from "./components/account";
+import MainLayout from "@/components/main-layout";
 
 export default function LoginPage() {
   return (
     <>
-      <div>
-        <div className="flex flex-col md:flex-row">
-          {" "}
-          <div className="flex items-center border-b w-full py-4">
-            {" "}
-            <div className="flex items-center px-8">
-              {" "}
-              <Image src={logo} width={64} height={36} alt="LCA logo" />
-            </div>
-            <MainNav className="mx-6" />
-            <div className="ml-auto flex items-center space-x-4">
-              {" "}
-              <UserNav />
-            </div>
-          </div>
-        </div>
-      </div>
+      <MainLayout />
       <div className="container relative hidden h-[800px] flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
         <div className="lg:p-8">
           <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
