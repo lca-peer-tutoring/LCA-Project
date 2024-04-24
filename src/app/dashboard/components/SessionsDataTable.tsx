@@ -127,7 +127,8 @@ export const SessionsDataTable = ({ userId }: { userId: string }) => {
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} className="bg-gray-100 border">
+                // Updated to ensure header color adapts to light/dark mode and removed borders
+                <TableHead key={header.id}>
                   {flexRender(
                     header.column.columnDef.header,
                     header.getContext()
@@ -141,7 +142,7 @@ export const SessionsDataTable = ({ userId }: { userId: string }) => {
           {table.getRowModel().rows.map((row) => (
             <TableRow key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id} className="border p-2">
+                <TableCell key={cell.id} className="p-2">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>
               ))}
