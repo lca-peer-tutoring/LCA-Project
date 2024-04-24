@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Check, ChevronsUpDown, CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {ClassData} from "./ClassManagement"
+import { ClassData } from "./ClassManagement";
 import { User } from "../models/User";
 import {
   Command,
@@ -41,15 +41,15 @@ interface SessionManagerProps {
   setDate: any;
   userId: string;
 }
-export interface Tutors{
-id: string,
-label: string,
-value: string
+export interface Tutors {
+  id: string;
+  label: string;
+  value: string;
 }
-export interface Classes{
-  id: string,
-  label: string,
-  value: string,
+export interface Classes {
+  id: string;
+  label: string;
+  value: string;
 }
 export const SessionManager: React.FC<SessionManagerProps> = ({
   onSaveSession,
@@ -328,11 +328,11 @@ export const SessionManager: React.FC<SessionManagerProps> = ({
       <DateTimePicker onDateChange={handleDateChange} />
 
       <Button
-        className="mt-4 justify-between text-left font-normal"
+        className="m-4 justify-between text-left font-normal"
         onClick={handleSaveSession}
       >
         Save Session
       </Button>
     </div>
   );
-}
+};

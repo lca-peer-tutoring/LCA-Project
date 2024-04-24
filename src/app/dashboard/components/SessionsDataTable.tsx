@@ -123,20 +123,20 @@ export const SessionsDataTable = ({ userId }: { userId: string }) => {
   return (
     <div className="rounded-md border p-4">
       <Table>
-        <TableHead>
+        <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHeader key={header.id} className="bg-gray-100 border">
+                <TableHead key={header.id} className="bg-gray-100 border">
                   {flexRender(
                     header.column.columnDef.header,
                     header.getContext()
                   )}
-                </TableHeader>
+                </TableHead>
               ))}
             </TableRow>
           ))}
-        </TableHead>
+        </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map((row) => (
             <TableRow key={row.id}>

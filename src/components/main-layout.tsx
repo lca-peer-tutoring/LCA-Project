@@ -9,7 +9,15 @@ export default function MainLayout() {
     <div className="flex flex-col md:flex-row">
       <div className="flex items-center border-b w-full py-4">
         <div className="flex items-center px-8">
-          <Image src={logo} width={64} height={36} alt="LCA logo" />
+          {/* Specify explicit dimensions for the image wrapper and use relative positioning */}
+          <div className="relative w-16 h-9 md:w-20 md:h-11 lg:w-24 lg:h-13">
+            <Image
+              src={logo}
+              layout="fill"
+              objectFit="contain"
+              alt="LCA logo"
+            />
+          </div>
         </div>
         <MainNav className="mx-6" />
         {/* Container for ModeToggle and UserNav */}

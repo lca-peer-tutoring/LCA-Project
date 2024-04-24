@@ -60,7 +60,9 @@ export default function AdminDashboard() {
       <div className="container mx-auto py-10">
         {userRole === "admin" && (
           <>
-            <Button onClick={toggleClassDialog}>Manage Classes</Button>
+            <Button className="mb-4" onClick={toggleClassDialog}>
+              Manage Classes
+            </Button>
             <Dialog open={isClassDialogOpen} onOpenChange={toggleClassDialog}>
               <DialogContent className="overflow-y-scroll max-h-96">
                 <DialogHeader>

@@ -53,7 +53,9 @@ export default function HomePage() {
           <h3 className="text-lg font-medium transition-colors">
             Your Sessions
           </h3>
-          <Button onClick={toggleRequestDialog}>Request a Session</Button>
+          <Button className="mr-1" onClick={toggleRequestDialog}>
+            Request a Session
+          </Button>
         </div>
         <div className="session-container">
           <SessionsContainer />
