@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { db } from "@/firebase/config";
-import { collection, onSnapshot } from "firebase/firestore"; // Import onSnapshot
+import { collection, onSnapshot } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import SessionCard from "./SessionCard";
-import Spinner from "react-bootstrap/Spinner"; // Assuming this is the correct import for Spinner
+import { Skeleton } from "@/components/ui/skeleton"; // Ensure this path is correct
 
 export default function SessionsContainer() {
   const [sessions, setSessions] = useState([]);
@@ -13,66 +13,53 @@ export default function SessionsContainer() {
   useEffect(() => {
     const unsubscribeFromAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // User is signed in, listen for session updates in their specific subcollection
         const userSessionsRef = collection(db, "users", user.uid, "sessions");
-
-        // Unsubscribe from any previously set up listeners
         setLoading(true);
 
-        // Set up a real-time listener to session updates
         const unsubscribeFromSession = onSnapshot(
           userSessionsRef,
           (snapshot) => {
-            const sessionsData = snapshot.docs.map((doc) => ({
-              ...doc.data(),
-              id: doc.id,
-            }));
+            const oneHourAgo = new Date(Date.now() - 3600000); // Current time minus one hour
+            const sessionsData = snapshot.docs
+              .map((doc) => ({
+                ...doc.data(),
+                id: doc.id,
+              }))
+              .filter((session) => new Date(session.date) > oneHourAgo);
             setSessions(sessionsData);
             setLoading(false);
           },
           (error) => {
             console.error("Error fetching user sessions:", error);
-            // Handle errors here, such as permissions issues or network problems
             setLoading(false);
           }
         );
 
-        return () => {
-          unsubscribeFromSession(); // Unsubscribe from session updates when component unmounts or auth state changes
-        };
+        return () => unsubscribeFromSession();
       } else {
-        // User is signed out, clear sessions and unsubscribe from any listeners
         setSessions([]);
         setLoading(false);
       }
     });
 
-    return () => {
-      unsubscribeFromAuth(); // Clean up auth listener
-    };
-  }, [auth]); // Dependency on auth object
+    return () => unsubscribeFromAuth();
+  }, [auth]);
 
   return (
     <>
       {loading ? (
-        // Spinner container styled to center only the spinner
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "500px", // Adjust based on typical session card size
-          }}
-        >
-          <Spinner color="blue.500" />
+        <div className="flex flex-col items-center justify-center min-h-[500px]">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <Skeleton key={index} />
+          ))}
         </div>
       ) : sessions.length > 0 ? (
-        // Map through sessions and display them
-        sessions.map((session) => (
-          <SessionCard key={session.id} session={session} />
-        ))
+        <div className="flex flex-wrap justify-start items-start gap-5 p-5">
+          {sessions.map((session) => (
+            <SessionCard key={session.id} session={session} />
+          ))}
+        </div>
       ) : (
-        // Display message or component when there are no sessions
         <p>No sessions available</p>
       )}
     </>

@@ -29,7 +29,7 @@ export default function SessionCard({ session }) {
     : "Date N/A";
 
   return (
-    <Card className="schedule-card-test" style={{ width: "18rem" }}>
+    <Card className="w-72 bg-white shadow-lg rounded-lg overflow-hidden">
       <CardHeader>
         <CardTitle>{session.class || "Class Information"}</CardTitle>
       </CardHeader>
